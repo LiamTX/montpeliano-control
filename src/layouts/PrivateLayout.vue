@@ -4,7 +4,7 @@
       <q-toolbar background="primary">
         <q-btn flat round dense icon="menu" />
         <q-toolbar-title> Toolbar </q-toolbar-title>
-        <!-- <q-btn flat round dense icon="more_vert" /> -->
+        <q-btn flat round dense icon="more_vert" />
       </q-toolbar>
     </div>
     <q-page-container>

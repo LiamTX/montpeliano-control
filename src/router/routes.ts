@@ -17,8 +17,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PrivateLayout.vue'),
     children: [
       {
-        path: '/home',
-        component: () => import('pages/Private/Home.vue')
+        path: '/supplies',
+        component: () => import('src/pages/Private/Supplies.vue')
       }
     ]
   },

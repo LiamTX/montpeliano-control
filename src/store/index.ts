@@ -11,6 +11,9 @@ import {
 
 import user from './user-module';
 import { UserStateInterface } from './user-module/state';
+
+import supply from './supply-module';
+import { SupplyStateInterface } from './supply-module/state';
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -24,6 +27,7 @@ export interface StateInterface {
   // Define your own store structure, using submodules if needed
   // example: ExampleStateInterface;
   user: UserStateInterface,
+  supply: SupplyStateInterface
   // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
   example: unknown
 }
@@ -42,7 +46,8 @@ export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     modules: {
       // example
-      user
+      user,
+      supply
     },
 
     // enable strict mode (adds overhead!)

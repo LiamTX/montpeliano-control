@@ -102,7 +102,7 @@ export default defineComponent({
           localStorage.removeItem("username");
         }
 
-        this.$router.push("/home");
+        this.$router.push("/supplies");
       } catch (error) {
         this.$store.commit("user/setApiLoading", false);
 
