@@ -16,6 +16,14 @@
         />
 
         <div>
+          <q-checkbox
+            v-model="save_username"
+            label="Lembre de mim"
+            color="orange-8"
+          />
+        </div>
+
+        <div>
           <q-btn
             :loading="apiLoading()"
             @click="auth()"
@@ -41,9 +49,19 @@ export default defineComponent({
         apiLoading: "user/getApiLoading",
       }),
 
+      save_username: ref(false),
+
       username: ref(""),
       password: ref(""),
     };
+  },
+
+  created() {
+    const username = localStorage.getItem("username");
+    if (username) {
+      this.save_username = true;
+      this.username = username;
+    }
   },
 
   methods: {
@@ -77,6 +95,13 @@ export default defineComponent({
         });
 
         this.$store.commit("user/setApiLoading", false);
+
+        if (this.save_username) {
+          localStorage.setItem("username", this.username);
+        } else {
+          localStorage.removeItem("username");
+        }
+
         this.$router.push("/home");
       } catch (error) {
         this.$store.commit("user/setApiLoading", false);
