@@ -1,4 +1,4 @@
-<template>
+<template dark>
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
       <router-view />
@@ -13,3 +13,14 @@ export default defineComponent({
   name: 'PublicLayout',
 })
 </script>
+
+<style lang="scss">
+body {
+  color: white;
+  background-color: black;
+}
+
+.body--dark {
+  // background: #000
+}
+</style>

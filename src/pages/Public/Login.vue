@@ -2,23 +2,25 @@
   <q-page class="row items-center justify-evenly">
     <div class="q-pa-md" style="width: 400px">
       <div class="col-4 mb-5">
-        <q-img src="../../assets/mont-logo.png" :ratio="16 / 9" />
+        <q-img src="../../assets/mont-logo.png" :ratio="19 / 9" />
       </div>
       <q-form class="q-gutter-md">
-        <q-input filled v-model="username" label="Username" color="black" />
+        <q-input filled v-model="username" label="Username" color="orange-9" dark />
 
         <q-input
           filled
           type="password"
           v-model="password"
           label="Password"
-          color="black"
+          color="orange-9"
+          dark
         />
 
         <div>
           <q-checkbox
+            dark
             v-model="save_username"
-            label="Lembre de mim"
+            label="Lembre-se de mim"
             color="orange-8"
           />
         </div>
@@ -90,7 +92,7 @@ export default defineComponent({
 
         this.$q.notify({
           message: "Seja bem-vindo(a)",
-          color: "positive",
+          color: "green-9",
           position: "top",
         });
 
