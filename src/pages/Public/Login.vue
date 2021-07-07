@@ -2,7 +2,7 @@
   <q-page class="row items-center justify-evenly">
     <div class="q-pa-md" style="width: 400px">
       <div class="col-4 mb-5">
-        <q-img src="https://placeimg.com/500/300/nature" :ratio="16 / 9" />
+        <q-img src="../../assets/mont-logo.png" :ratio="16 / 9" />
       </div>
       <q-form class="q-gutter-md">
         <q-input filled v-model="username" label="Username" color="black" />
