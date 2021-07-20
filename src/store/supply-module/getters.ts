@@ -3,8 +3,11 @@ import { StateInterface } from '../index';
 import { SupplyStateInterface } from './state';
 
 const getters: GetterTree<SupplyStateInterface, StateInterface> = {
-  someAction (/* context */) {
+  someAction(/* context */) {
     // your code
+  },
+  getSupplies(state) {
+    return state.supplies;
   }
 };
 

@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'PublicLayout',
@@ -17,7 +17,7 @@ export default defineComponent({
 <style lang="scss">
 body {
   color: white;
-  background-color: black;
+  background-color: rgb(34, 33, 33);
 }
 
 .body--dark {

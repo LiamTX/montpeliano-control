@@ -4,13 +4,10 @@ import { StateInterface } from '../index';
 import { SupplyStateInterface } from './state';
 
 const actions: ActionTree<SupplyStateInterface, StateInterface> = {
-  someAction(/* context */) {
-    // your code
-  },
-  async createSupply(context, data) {
-    const supply = await api.post(data);
+  async findAllSupplies(context, data) {
+    const supplies = await api.get(`/supplies`);
 
-    return supply.data;
+    return supplies.data;
   }
 };
 
