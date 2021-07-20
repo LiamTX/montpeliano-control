@@ -20,9 +20,65 @@
 
             <q-btn color="orange-8" label="Buscar" />
 
-            <q-btn color="orange-8" class="float-right" label="Novo tipo de insumo" />
-            <q-btn color="orange-8" class="float-right" label="Novo de medida" />
-            <q-btn color="orange-8" class="float-right" label="Novo insumo" />
+            <!-- <q-btn
+              color="orange-8"
+              class="float-right"
+              label="Novo tipo de medida"
+            />
+            <q-btn
+              color="orange-8"
+              class="float-right"
+              label="Novo tipo de insumo"
+            />
+            <q-btn color="orange-8" class="float-right" label="Novo insumo" /> -->
+
+            <q-btn-dropdown
+              color="orange-8"
+              label="Cadastrar"
+              class="float-right"
+            >
+              <q-list>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="onItemClick('new_supply')"
+                >
+                  <q-item-section>
+                    <q-item-label>Novo insumo</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="onItemClick('new_supply_type')"
+                >
+                  <q-item-section>
+                    <q-item-label>Novo tipo de insumo</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="onItemClick('new_supply_measure_type')"
+                >
+                  <q-item-section>
+                    <q-item-label>Novo tipo de medida</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+
+            <new-supply-prompt :prompt="newSupply" @close="newSupply = false" />
+            <new-supply-type-prompt
+              :prompt="newSupplyType"
+              @close="newSupplyType = false"
+            />
+            <new-supply-measure-type-prompt
+              :prompt="newSupplyMeasureType"
+              @close="newSupplyMeasureType = false"
+            />
           </div>
 
           <div class="q-pa-md">
@@ -72,6 +128,10 @@
 import { mapGetters } from "vuex";
 import { defineComponent, ref } from "vue";
 
+import NewSupplyTypePrompt from "../../components/NewSupplyTypePrompt.vue";
+import NewSupplyPrompt from "../../components/NewSupplyPrompt.vue";
+import NewSupplyMeasureTypePrompt from "../../components/NewSupplyMeasureTypePrompt.vue";
+
 const columns = [
   {
     name: "code",
@@ -97,6 +157,13 @@ const columns = [
 
 export default defineComponent({
   name: "Supplies",
+
+  components: {
+    NewSupplyTypePrompt,
+    NewSupplyPrompt,
+    NewSupplyMeasureTypePrompt,
+  },
+
   setup() {
     return {
       // ...mapGetters({
@@ -111,6 +178,10 @@ export default defineComponent({
       tab: ref("supplies"),
 
       columns,
+
+      newSupplyType: ref(false),
+      newSupplyMeasureType: ref(false),
+      newSupply: ref(false),
     };
   },
 
@@ -121,6 +192,20 @@ export default defineComponent({
     } catch (error) {
       console.log("err", error);
     }
+  },
+
+  methods: {
+    onItemClick(target: string) {
+      if (target == "new_supply_type") {
+        this.newSupplyType = true;
+      }
+      if (target == "new_supply") {
+        this.newSupply = true;
+      }
+      if (target == "new_supply_measure_type") {
+        this.newSupplyMeasureType = true;
+      }
+    },
   },
 });
 </script>
