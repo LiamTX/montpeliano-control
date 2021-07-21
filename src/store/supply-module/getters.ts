@@ -8,6 +8,18 @@ const getters: GetterTree<SupplyStateInterface, StateInterface> = {
   },
   getSupplies(state) {
     return state.supplies;
+  },
+  getApiLoading(state) {
+    return state.apiLoading;
+  },
+  getPageLoading(state) {
+    return state.pageLoading;
+  },
+  getSupplyTypes(state) {
+    return state.supplyTypes;
+  },
+  getSupplyMeasureTypes(state) {
+    return state.supplyMeasureTypes;
   }
 };
 

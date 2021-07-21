@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="window-height">
+    <div class="window-height" v-if="!pageLoading()">
       <q-tabs v-model="tab" no-caps class="bg-orange text-white shadow-2">
         <q-tab name="supplies" label="Insumos" />
         <q-tab name="out_in_supplies" label="Entrada/Saida de insumos" />
@@ -70,7 +70,14 @@
               </q-list>
             </q-btn-dropdown>
 
-            <new-supply-prompt :prompt="newSupply" @close="newSupply = false" />
+            <new-supply-prompt
+              :prompt="newSupply"
+              :optionsSupplyTypes="optionsSupplyTypes"
+              :optionsSupplyMeasureTypes="optionsSupplyMeasureTypes"
+              @close="newSupply = false"
+              @supply_type_empty="supplyTypeEmpty()"
+              @supply_measure_type_empty="supplyMeasureTypeEmpty()"
+            />
             <new-supply-type-prompt
               :prompt="newSupplyType"
               @close="newSupplyType = false"
@@ -111,7 +118,7 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
-    <!-- <div v-if="loading">
+    <div v-if="pageLoading()">
       <lottie-player
         src="https://assets1.lottiefiles.com/packages/lf20_UGvCSC/loading_animation.json"
         background="transparent"
@@ -120,7 +127,7 @@
         loop
         autoplay
       ></lottie-player>
-    </div> -->
+    </div>
   </q-page>
 </template>
 
@@ -165,10 +172,16 @@ export default defineComponent({
   },
 
   setup() {
+    let optionsSupplyTypes: any[] = [];
+    let optionsSupplyMeasureTypes: any[] = [];
+
     return {
-      // ...mapGetters({
-      //   supplies: "supply/getSupplies",
-      // }),
+      ...mapGetters({
+        pageLoading: "supply/getPageLoading",
+        supplyTypes: "supply/getSupplyTypes",
+        supplyMeasureTypes: "supply/getSupplyMeasureTypes",
+      }),
+
       supplies: [],
 
       loading: ref(true),
@@ -182,24 +195,82 @@ export default defineComponent({
       newSupplyType: ref(false),
       newSupplyMeasureType: ref(false),
       newSupply: ref(false),
+
+      optionsSupplyTypes,
+      optionsSupplyMeasureTypes,
     };
   },
 
   async created() {
     try {
+      this.$store.commit("supply/setPageLoading", true);
+
       const data = await this.$store.dispatch("supply/findAllSupplies");
       this.$store.commit("supply/setSupplies", data);
+
+      await this.$store.dispatch("supply/getAllSupplyTypes");
+      await this.$store.dispatch("supply/getAllSupplyMeasureTypes");
+      this.$store.commit("supply/setPageLoading", false);
     } catch (error) {
       console.log("err", error);
+      this.$store.commit("supply/setPageLoading", false);
     }
   },
 
   methods: {
+    supplyTypeEmpty() {
+      this.newSupply = false;
+      this.newSupplyType = true;
+    },
+
+    supplyMeasureTypeEmpty() {
+      this.newSupply = false;
+      this.newSupplyMeasureType = true;
+    },
+
     onItemClick(target: string) {
       if (target == "new_supply_type") {
         this.newSupplyType = true;
       }
       if (target == "new_supply") {
+        let supplyTypesNames = [];
+        for (let supplyType of this.supplyTypes()) {
+          const { name, code, _id } = supplyType;
+          supplyTypesNames.push({
+            label: name,
+            value: name,
+            id: _id,
+            code,
+          });
+        }
+
+        this.optionsSupplyTypes = supplyTypesNames;
+        if (this.optionsSupplyTypes.length == 0) {
+          this.optionsSupplyTypes.push({
+            label: "Cadastre um tipo de insumo",
+            value: "Cadastre um tipo de insumo",
+          });
+        }
+
+        let supplyMeasureTypesNames = [];
+        for (let supplyMeasureType of this.supplyMeasureTypes()) {
+          const { name, code, _id } = supplyMeasureType;
+          supplyMeasureTypesNames.push({
+            label: name,
+            value: name,
+            id: _id,
+            code,
+          });
+        }
+
+        this.optionsSupplyMeasureTypes = supplyMeasureTypesNames;
+        if (this.optionsSupplyMeasureTypes.length == 0) {
+          this.optionsSupplyMeasureTypes.push({
+            label: "Cadastre um tipo de medida de insumo",
+            value: "Cadastre um tipo de medida de insumo",
+          });
+        }
+
         this.newSupply = true;
       }
       if (target == "new_supply_measure_type") {
