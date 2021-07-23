@@ -6,7 +6,7 @@ const mutation: MutationTree<SupplyStateInterface> = {
     // your code
   },
   setSupplies(state, supplies) {
-    state.supplies.values = supplies;
+    state.supplies = supplies;
   },
   setApiLoading(state, bool: boolean) {
     state.apiLoading = bool;

@@ -4,10 +4,15 @@ import { StateInterface } from '../index';
 import { SupplyStateInterface } from './state';
 
 const actions: ActionTree<SupplyStateInterface, StateInterface> = {
-  async findAllSupplies(context, data) {
-    const supplies = await api.get(`/supplies`);
+  async findAllSupplies(context, data?: { param: string, value: string }) {
+    let queryString = "";
+    if (data) {
+      queryString = `?${data.param}=${data.value}`
+    }
 
-    return supplies.data;
+    const supplies = await api.get(`/supplies${queryString}`);
+
+    context.commit('setSupplies', supplies.data);
   },
   async createSupply(context, data) {
     const supply = await api.post('/supplies', data);

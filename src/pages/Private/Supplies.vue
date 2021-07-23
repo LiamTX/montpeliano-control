@@ -18,19 +18,12 @@
             <q-radio v-model="shape" val="type" label="Tipo" />
             <q-radio v-model="shape" val="qty" label="Qtd em estoque" />
 
-            <q-btn color="orange-8" label="Buscar" />
-
-            <!-- <q-btn
-              color="orange-8"
-              class="float-right"
-              label="Novo tipo de medida"
-            />
             <q-btn
               color="orange-8"
-              class="float-right"
-              label="Novo tipo de insumo"
+              label="Buscar"
+              @click="findSupplies()"
+              :loading="apiLoading()"
             />
-            <q-btn color="orange-8" class="float-right" label="Novo insumo" /> -->
 
             <q-btn-dropdown
               color="orange-8"
@@ -88,9 +81,38 @@
             />
           </div>
 
+          <div class="q-gutter-sm q-pa-md">
+            <q-input
+              v-if="showCodeSupplyInput"
+              dark
+              color="orange-8"
+              label="Código"
+              style="width: 20%"
+              v-model="findBySupplyCodeInput"
+            />
+            <q-select
+              v-if="showTypeSupplySelect"
+              color="orange-9"
+              v-model="findBySupplyTypeSelect"
+              :options="optionsSupplyTypes"
+              label="Tipo do insumo"
+              style="width: 20%"
+              dark
+            />
+            <q-input
+              v-if="showQtySupplyInput"
+              dark
+              type="number"
+              color="orange-8"
+              v-model="findBySupplyQtyInput"
+              label="Quantidade"
+              style="width: 20%"
+            />
+          </div>
+
           <div class="q-pa-md">
             <q-table
-              :rows="supplies"
+              :rows="supplies()"
               :columns="columns"
               row-key="id"
               dark
@@ -138,6 +160,7 @@ import { defineComponent, ref } from "vue";
 import NewSupplyTypePrompt from "../../components/NewSupplyTypePrompt.vue";
 import NewSupplyPrompt from "../../components/NewSupplyPrompt.vue";
 import NewSupplyMeasureTypePrompt from "../../components/NewSupplyMeasureTypePrompt.vue";
+import { profile } from "console";
 
 const columns = [
   {
@@ -175,14 +198,20 @@ export default defineComponent({
     let optionsSupplyTypes: any[] = [];
     let optionsSupplyMeasureTypes: any[] = [];
 
+    let modelSupplyType: any = ref("");
+
+    let findBySupplyTypeSelect: any = ref("");
+
     return {
       ...mapGetters({
         pageLoading: "supply/getPageLoading",
+        apiLoading: "supply/getApiLoading",
+        supplies: "supply/getSupplies",
         supplyTypes: "supply/getSupplyTypes",
         supplyMeasureTypes: "supply/getSupplyMeasureTypes",
       }),
 
-      supplies: [],
+      modelSupplyType,
 
       loading: ref(true),
 
@@ -198,7 +227,33 @@ export default defineComponent({
 
       optionsSupplyTypes,
       optionsSupplyMeasureTypes,
+
+      showCodeSupplyInput: ref(false),
+      showTypeSupplySelect: ref(false),
+      showQtySupplyInput: ref(false),
+
+      findBySupplyCodeInput: ref(""),
+      findBySupplyTypeSelect,
+      findBySupplyQtyInput: ref(""),
     };
+  },
+
+  watch: {
+    shape(value, oldValue) {
+      this.showCodeSupplyInput = false;
+      this.showTypeSupplySelect = false;
+      this.showQtySupplyInput = false;
+
+      if (value == "code") {
+        this.showCodeSupplyInput = true;
+      }
+      if (value == "type") {
+        this.showTypeSupplySelect = true;
+      }
+      if (value == "qty") {
+        this.showQtySupplyInput = true;
+      }
+    },
   },
 
   async created() {
@@ -210,6 +265,8 @@ export default defineComponent({
 
       await this.$store.dispatch("supply/getAllSupplyTypes");
       await this.$store.dispatch("supply/getAllSupplyMeasureTypes");
+
+      this.loadSupplyTypes();
       this.$store.commit("supply/setPageLoading", false);
     } catch (error) {
       console.log("err", error);
@@ -228,29 +285,33 @@ export default defineComponent({
       this.newSupplyMeasureType = true;
     },
 
+    loadSupplyTypes() {
+      let supplyTypesNames = [];
+      for (let supplyType of this.supplyTypes()) {
+        const { name, code, _id } = supplyType;
+        supplyTypesNames.push({
+          label: name,
+          value: name,
+          id: _id,
+          code,
+        });
+      }
+
+      this.optionsSupplyTypes = supplyTypesNames;
+      if (this.optionsSupplyTypes.length == 0) {
+        this.optionsSupplyTypes.push({
+          label: "Cadastre um tipo de insumo",
+          value: "Cadastre um tipo de insumo",
+        });
+      }
+    },
+
     onItemClick(target: string) {
       if (target == "new_supply_type") {
         this.newSupplyType = true;
       }
       if (target == "new_supply") {
-        let supplyTypesNames = [];
-        for (let supplyType of this.supplyTypes()) {
-          const { name, code, _id } = supplyType;
-          supplyTypesNames.push({
-            label: name,
-            value: name,
-            id: _id,
-            code,
-          });
-        }
-
-        this.optionsSupplyTypes = supplyTypesNames;
-        if (this.optionsSupplyTypes.length == 0) {
-          this.optionsSupplyTypes.push({
-            label: "Cadastre um tipo de insumo",
-            value: "Cadastre um tipo de insumo",
-          });
-        }
+        this.loadSupplyTypes();
 
         let supplyMeasureTypesNames = [];
         for (let supplyMeasureType of this.supplyMeasureTypes()) {
@@ -275,6 +336,45 @@ export default defineComponent({
       }
       if (target == "new_supply_measure_type") {
         this.newSupplyMeasureType = true;
+      }
+    },
+
+    async findSupplies() {
+      try {
+        this.$store.commit("supply/setApiLoading", true);
+
+        // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        if (this.shape == "all") {
+          await this.$store.dispatch("supply/findAllSupplies");
+        } else {
+          let value = "";
+          if (this.shape == "code") {
+            value = this.findBySupplyCodeInput;
+          }
+          if (this.shape == "type") {
+            value = this.findBySupplyTypeSelect.value;
+          }
+          if (this.shape == "qty") {
+            value = this.findBySupplyQtyInput;
+          }
+          await this.$store.dispatch("supply/findAllSupplies", {
+            param: this.shape,
+            value,
+          });
+        }
+
+        if (this.supplies().length == 0) {
+          this.$q.notify({
+            message: "Não existe nenhum insumo buscado.",
+            color: "negative",
+            position: "top",
+          });
+        }
+
+        this.$store.commit("supply/setApiLoading", false);
+      } catch (error) {
+        console.log("err", error);
       }
     },
   },

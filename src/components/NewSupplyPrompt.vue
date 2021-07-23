@@ -57,6 +57,7 @@
           @click="$emit('close')"
         />
         <q-btn
+          :loading="apiLoading()"
           color="orange-8"
           flat
           label="Cadastrar"
@@ -104,15 +105,19 @@ export default defineComponent({
 
   watch: {
     modelSupplyType(value, oldValue) {
-      if (value.value == "Cadastre um tipo de insumo") {
-        this.modelSupplyType = undefined;
-        this.$emit("supply_type_empty");
+      if (value != undefined) {
+        if (value.value == "Cadastre um tipo de insumo") {
+          this.modelSupplyType = undefined;
+          this.$emit("supply_type_empty");
+        }
       }
     },
     modelSupplyMeasureType(value, oldValue) {
-      if (value.value == "Cadastre um tipo de medida de insumo") {
-        this.modelSupplyMeasureType = undefined;
-        this.$emit("supply_measure_type_empty");
+      if (value != undefined) {
+        if (value.value == "Cadastre um tipo de medida de insumo") {
+          this.modelSupplyMeasureType = undefined;
+          this.$emit("supply_measure_type_empty");
+        }
       }
     },
   },
@@ -124,8 +129,9 @@ export default defineComponent({
         !this.name ||
         !this.modelSupplyType ||
         !this.modelSupplyMeasureType ||
-        this.modelSupplyType == "Cadastre um tipo de insumo" ||
-        this.modelSupplyMeasureType == "Cadastre um tipo de medida de insumo"
+        this.modelSupplyType.value == "Cadastre um tipo de insumo" ||
+        this.modelSupplyMeasureType.value ==
+          "Cadastre um tipo de medida de insumo"
       ) {
         this.$q.notify({
           message: "Preencha todos os campos",
@@ -164,9 +170,25 @@ export default defineComponent({
         this.$emit("close");
         return;
       } catch (error) {
-        console.log("err", error);
-
+        console.log("err", error.message);
+        const { message } = error;
         this.$store.commit("supply/setApiLoading", false);
+
+        if (message == "Request failed with status code 400") {
+          this.$q.notify({
+            message:
+              "Insumo já existente na base de dados com esse código ou nome.",
+            color: "negative",
+            position: "top",
+          });
+
+          this.code = "";
+          this.name = "";
+          this.modelSupplyType = null;
+          this.modelSupplyMeasureType = null;
+
+          return;
+        }
       }
     },
   },
