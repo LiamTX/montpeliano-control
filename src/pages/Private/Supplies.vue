@@ -113,7 +113,7 @@
           <div class="q-pa-md">
             <q-table
               :rows="supplies()"
-              :columns="columns"
+              :columns="supplyColumns"
               row-key="id"
               dark
               color="amber"
@@ -124,19 +124,72 @@
         </q-tab-panel>
 
         <q-tab-panel name="out_in_supplies">
-          <div class="text-h4 q-mb-md">Entrada e saida de insumos</div>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-            praesentium cumque magnam odio iure quidem, quod illum numquam
-            possimus obcaecati commodi minima assumenda consectetur culpa fuga
-            nulla ullam. In, libero.
-          </p>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-            praesentium cumque magnam odio iure quidem, quod illum numquam
-            possimus obcaecati commodi minima assumenda consectetur culpa fuga
-            nulla ullam. In, libero.
-          </p>
+          <div class="text-h4 q-pa-md">Entrada e saida de insumos</div>
+
+          <label class="q-pa-md">Buscar por:</label>
+
+          <div class="q-gutter-sm q-pa-md">
+            <q-radio v-model="shape" val="all" label="Todos" />
+            <q-radio v-model="shape" val="code" label="Código" />
+            <q-radio v-model="shape" val="type" label="Tipo" />
+            <q-radio v-model="shape" val="qty" label="Qtd em estoque" />
+
+            <q-btn
+              color="orange-8"
+              label="Buscar"
+              @click="findSupplies()"
+              :loading="apiLoading()"
+            />
+
+            <q-btn-dropdown
+              color="orange-8"
+              label="Cadastrar"
+              class="float-right"
+            >
+              <q-list>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="onItemClickOutIn('new_supply_entry')"
+                >
+                  <q-item-section>
+                    <q-item-label>Entrada de insumo</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="onItemClickOutIn('new_supply_out')"
+                >
+                  <q-item-section>
+                    <q-item-label>Saida de insumo</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+
+            <new-supply-entry 
+              :prompt="newSupplyEntry"
+              @close="newSupplyEntry = false"
+            />
+            <new-supply-out 
+              :prompt="newSupplyOut"
+              @close="newSupplyOut = false"
+            />
+          </div>
+
+          <div class="q-pa-md">
+            <q-table
+              :rows="supplies()"
+              :columns="logColumns"
+              row-key="id"
+              dark
+              color="amber"
+              :rows-per-page-options="[7]"
+              no-data-label="Selecione um filtro para listagem dos itens"
+            />
+          </div>
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -160,9 +213,10 @@ import { defineComponent, ref } from "vue";
 import NewSupplyTypePrompt from "../../components/NewSupplyTypePrompt.vue";
 import NewSupplyPrompt from "../../components/NewSupplyPrompt.vue";
 import NewSupplyMeasureTypePrompt from "../../components/NewSupplyMeasureTypePrompt.vue";
-import { profile } from "console";
+import NewSupplyEntry from "../../components/NewSupplyEntry.vue";
+import NewSupplyOut from '../../components/NewSupplyOut.vue';
 
-const columns = [
+const supplyColumns = [
   {
     name: "code",
     label: "Código",
@@ -185,6 +239,23 @@ const columns = [
   },
 ];
 
+const logColumns = [
+  {
+    name: "message",
+    label: "Ação",
+    align: "left",
+    field: "message",
+  },
+  {
+    name: "date",
+    align: "center",
+    label: "Data",
+    field: "date",
+  },
+  { name: "targetCode", label: "Código", field: "targetCode" },
+  { name: "targetName", label: "Nome", field: "targetCode" },
+];
+
 export default defineComponent({
   name: "Supplies",
 
@@ -192,6 +263,8 @@ export default defineComponent({
     NewSupplyTypePrompt,
     NewSupplyPrompt,
     NewSupplyMeasureTypePrompt,
+    NewSupplyEntry,
+    NewSupplyOut
   },
 
   setup() {
@@ -219,11 +292,15 @@ export default defineComponent({
 
       tab: ref("supplies"),
 
-      columns,
+      supplyColumns,
+      logColumns,
 
       newSupplyType: ref(false),
       newSupplyMeasureType: ref(false),
       newSupply: ref(false),
+
+      newSupplyEntry: ref(false),
+      newSupplyOut: ref(false),
 
       optionsSupplyTypes,
       optionsSupplyMeasureTypes,
@@ -339,6 +416,15 @@ export default defineComponent({
       }
     },
 
+    onItemClickOutIn(target: string) {
+      if(target == 'new_supply_entry') {
+        this.newSupplyEntry = true;
+      }
+      if(target == 'new_supply_out') {
+        this.newSupplyOut = true;
+      }
+    },
+
     async findSupplies() {
       try {
         this.$store.commit("supply/setApiLoading", true);
@@ -374,7 +460,27 @@ export default defineComponent({
 
         this.$store.commit("supply/setApiLoading", false);
       } catch (error) {
-        console.log("err", error);
+        this.$store.commit("user/setApiLoading", false);
+
+        const { message } = error;
+        const status = message.split(" ")[message.split(" ").length - 1];
+
+        const unauthorizedStatus = ["401", "404"];
+        if (unauthorizedStatus.includes(status)) {
+          this.$q.notify({
+            message: "Não autorizado!",
+            color: "negative",
+            position: "top",
+          });
+
+          return this.$router.push("/");
+        }
+
+        this.$q.notify({
+          message: "Erro interno, tente novamente mais tarde.",
+          color: "negative",
+          position: "top",
+        });
       }
     },
   },
