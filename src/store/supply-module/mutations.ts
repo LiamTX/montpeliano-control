@@ -19,6 +19,10 @@ const mutation: MutationTree<SupplyStateInterface> = {
   },
   setSupplyMeasureTypes(state, supplyMeasureTypes) {
     state.supplyMeasureTypes.push(...supplyMeasureTypes);
+  },
+
+  setSupplyLogs(state, supplyLogs) {
+    state.supplyLogs = supplyLogs;
   }
 };
 

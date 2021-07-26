@@ -19,7 +19,7 @@
           filled
           label="Quantidade"
           color="orange-9"
-          v-model="name"
+          v-model="qty"
         />
       </q-card-section>
 
@@ -36,7 +36,7 @@
           flat
           label="Cadastrar"
           :loading="apiLoading()"
-          @click="createSupplyType()"
+          @click="createSupplyTOutput()"
         />
       </q-card-actions>
     </q-card>
@@ -63,13 +63,13 @@ export default defineComponent({
       }),
 
       code: ref(""),
-      name: ref(""),
+      qty: ref(0),
     };
   },
 
   methods: {
-    async createSupplyType() {
-      if (!this.code || !this.name) {
+    async createSupplyTOutput() {
+      if (!this.code || !this.qty) {
         this.$q.notify({
           message: "Preencha todos os campos",
           color: "negative",
@@ -79,28 +79,27 @@ export default defineComponent({
       }
 
       try {
-        const supplyType = {
+        const supplyOutPut = {
           code: this.code,
-          name: this.name,
+          qty: this.qty,
         };
 
         this.$store.commit("supply/setApiLoading", true);
 
         const response = await this.$store.dispatch(
-          "supply/createSupplyType",
-          supplyType
+          "supply/supplyOutPut",
+          supplyOutPut
         );
 
         this.code = "";
-        this.name = "";
+        this.qty = 0;
 
         this.$q.notify({
-          message: "Tipo de insumo cadastrado com sucesso!",
+          message: "Saída de insumo cadastrado com sucesso!",
           color: "green-9",
           position: "top",
         });
 
-        this.$store.commit("supply/setSupplyTypes", [response]);
         this.$store.commit("supply/setApiLoading", false);
         this.$emit("close");
         return;

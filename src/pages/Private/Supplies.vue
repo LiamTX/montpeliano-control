@@ -131,13 +131,12 @@
           <div class="q-gutter-sm q-pa-md">
             <q-radio v-model="shape" val="all" label="Todos" />
             <q-radio v-model="shape" val="code" label="Código" />
-            <q-radio v-model="shape" val="type" label="Tipo" />
-            <q-radio v-model="shape" val="qty" label="Qtd em estoque" />
+            <q-radio v-model="shape" val="message" label="Ação" />
 
             <q-btn
               color="orange-8"
               label="Buscar"
-              @click="findSupplies()"
+              @click="findSupplyLogs()"
               :loading="apiLoading()"
             />
 
@@ -169,11 +168,11 @@
               </q-list>
             </q-btn-dropdown>
 
-            <new-supply-entry 
+            <new-supply-entry
               :prompt="newSupplyEntry"
               @close="newSupplyEntry = false"
             />
-            <new-supply-out 
+            <new-supply-out
               :prompt="newSupplyOut"
               @close="newSupplyOut = false"
             />
@@ -181,13 +180,13 @@
 
           <div class="q-pa-md">
             <q-table
-              :rows="supplies()"
+              :rows="supplyLogs()"
               :columns="logColumns"
               row-key="id"
               dark
               color="amber"
               :rows-per-page-options="[7]"
-              no-data-label="Selecione um filtro para listagem dos itens"
+              no-data-label="Selecione um filtro para listagem dos logs"
             />
           </div>
         </q-tab-panel>
@@ -214,7 +213,7 @@ import NewSupplyTypePrompt from "../../components/NewSupplyTypePrompt.vue";
 import NewSupplyPrompt from "../../components/NewSupplyPrompt.vue";
 import NewSupplyMeasureTypePrompt from "../../components/NewSupplyMeasureTypePrompt.vue";
 import NewSupplyEntry from "../../components/NewSupplyEntry.vue";
-import NewSupplyOut from '../../components/NewSupplyOut.vue';
+import NewSupplyOut from "../../components/NewSupplyOut.vue";
 
 const supplyColumns = [
   {
@@ -253,7 +252,7 @@ const logColumns = [
     field: "date",
   },
   { name: "targetCode", label: "Código", field: "targetCode" },
-  { name: "targetName", label: "Nome", field: "targetCode" },
+  { name: "targetName", label: "Nome", field: "targetName" },
 ];
 
 export default defineComponent({
@@ -264,7 +263,7 @@ export default defineComponent({
     NewSupplyPrompt,
     NewSupplyMeasureTypePrompt,
     NewSupplyEntry,
-    NewSupplyOut
+    NewSupplyOut,
   },
 
   setup() {
@@ -280,6 +279,7 @@ export default defineComponent({
         pageLoading: "supply/getPageLoading",
         apiLoading: "supply/getApiLoading",
         supplies: "supply/getSupplies",
+        supplyLogs: "supply/getSupplyLogs",
         supplyTypes: "supply/getSupplyTypes",
         supplyMeasureTypes: "supply/getSupplyMeasureTypes",
       }),
@@ -417,10 +417,10 @@ export default defineComponent({
     },
 
     onItemClickOutIn(target: string) {
-      if(target == 'new_supply_entry') {
+      if (target == "new_supply_entry") {
         this.newSupplyEntry = true;
       }
-      if(target == 'new_supply_out') {
+      if (target == "new_supply_out") {
         this.newSupplyOut = true;
       }
     },
@@ -460,7 +460,7 @@ export default defineComponent({
 
         this.$store.commit("supply/setApiLoading", false);
       } catch (error) {
-        this.$store.commit("user/setApiLoading", false);
+        this.$store.commit("supply/setApiLoading", false);
 
         const { message } = error;
         const status = message.split(" ")[message.split(" ").length - 1];
@@ -481,6 +481,41 @@ export default defineComponent({
           color: "negative",
           position: "top",
         });
+      }
+    },
+
+    async findSupplyLogs() {
+      try {
+        this.$store.commit("supply/setApiLoading", true);
+
+        if (this.shape == "all") {
+          await this.$store.dispatch("supply/getSupplyLogs");
+        } else {
+          let value = "";
+          if (this.shape == "code") {
+            value = this.findBySupplyCodeInput;
+          }
+          if(this.shape == 'message') {
+
+          }
+          await this.$store.dispatch("supply/getSupplyLogs", {
+            param: this.shape,
+            value,
+          });
+        }
+
+        if (this.supplyLogs().length == 0) {
+          this.$q.notify({
+            message: "Não existe nenhuma entrada ou saída de insumo cadastrada.",
+            color: "negative",
+            position: "top",
+          });
+        }
+
+        this.$store.commit("supply/setApiLoading", false);
+      } catch (error) {
+        console.log('err', error);
+        this.$store.commit("supply/setApiLoading", false);
       }
     },
   },

@@ -20,6 +20,16 @@ interface supplyMeasureType {
   name: string;
 }
 
+interface supplyLog {
+  _id: string;
+  message: string;
+  date: string;
+  targetCode: string;
+  targetName: string;
+  description?: string;
+  value?: string;
+}
+
 export interface SupplyStateInterface {
   prop: boolean;
   supplies: supply[];
@@ -27,6 +37,7 @@ export interface SupplyStateInterface {
   supplyMeasureTypes: supplyMeasureType[];
   apiLoading: boolean;
   pageLoading: boolean;
+  supplyLogs: supplyLog[];
 }
 
 function state(): SupplyStateInterface {
@@ -36,7 +47,8 @@ function state(): SupplyStateInterface {
     supplyTypes: [],
     supplyMeasureTypes: [],
     apiLoading: false,
-    pageLoading: false
+    pageLoading: false,
+    supplyLogs: []
   }
 };
 

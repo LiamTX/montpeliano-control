@@ -38,6 +38,27 @@ const actions: ActionTree<SupplyStateInterface, StateInterface> = {
     const supplyMeasureTypes = await (await api.get('/supply-measure-types')).data;
 
     context.commit('setSupplyMeasureTypes', supplyMeasureTypes);
+  },
+
+  async getSupplyLogs(context, data?: { param: string, value: string }) {
+    let queryString = "";
+    if (data) {
+      queryString = `?${data.param}=${data.value}`
+    }
+
+    const supplyLogs = await api.get(`/logs${queryString}`);
+
+    context.commit('setSupplyLogs', supplyLogs.data);
+  },
+  async supplyEntry(context, data) {
+    const supplyEntry = await (await api.post('/supplies/entry', data)).data;
+
+    return supplyEntry;
+  },
+  async supplyOutPut(context, data) {
+    const supplyOutPut = await (await api.post('/supplies/output', data)).data;
+
+    return supplyOutPut;
   }
 };
 

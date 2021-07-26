@@ -19,7 +19,8 @@
           filled
           label="Quantidade"
           color="orange-9"
-          v-model="name"
+          v-model="qty"
+          type="number"
         />
 
         <q-input
@@ -27,7 +28,7 @@
           filled
           label="Valor(opcional)"
           color="orange-9"
-          v-model="name"
+          v-model="value"
         />
       </q-card-section>
 
@@ -44,7 +45,7 @@
           flat
           label="Cadastrar"
           :loading="apiLoading()"
-          @click="createSupplyType()"
+          @click="createSupplyEntry()"
         />
       </q-card-actions>
     </q-card>
@@ -71,13 +72,14 @@ export default defineComponent({
       }),
 
       code: ref(""),
-      name: ref(""),
+      qty: ref(0),
+      value: ref("")
     };
   },
 
   methods: {
-    async createSupplyType() {
-      if (!this.code || !this.name) {
+    async createSupplyEntry() {
+      if (!this.code || !this.qty) {
         this.$q.notify({
           message: "Preencha todos os campos",
           color: "negative",
@@ -87,28 +89,30 @@ export default defineComponent({
       }
 
       try {
-        const supplyType = {
+        const supplyEntry = {
           code: this.code,
-          name: this.name,
+          qty: this.qty,
+          value: this.value
         };
+
 
         this.$store.commit("supply/setApiLoading", true);
 
         const response = await this.$store.dispatch(
-          "supply/createSupplyType",
-          supplyType
+          "supply/supplyEntry",
+          supplyEntry
         );
 
         this.code = "";
-        this.name = "";
+        this.qty = 0;
+        this.value = "";
 
         this.$q.notify({
-          message: "Tipo de insumo cadastrado com sucesso!",
+          message: "Entrada de insumo cadastrado com sucesso!",
           color: "green-9",
           position: "top",
         });
 
-        this.$store.commit("supply/setSupplyTypes", [response]);
         this.$store.commit("supply/setApiLoading", false);
         this.$emit("close");
         return;

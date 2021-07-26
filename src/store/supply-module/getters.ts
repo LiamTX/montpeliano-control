@@ -20,6 +20,10 @@ const getters: GetterTree<SupplyStateInterface, StateInterface> = {
   },
   getSupplyMeasureTypes(state) {
     return state.supplyMeasureTypes;
+  },
+
+  getSupplyLogs(state) {
+    return state.supplyLogs;
   }
 };
 
