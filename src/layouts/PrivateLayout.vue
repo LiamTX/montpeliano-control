@@ -29,7 +29,7 @@
             </q-list>
           </q-menu>
         </q-btn>
-        <q-toolbar-title> Toolbar </q-toolbar-title>
+        <q-toolbar-title> {{ title }} </q-toolbar-title>
         <q-btn flat round dense icon="more_vert">
           <q-menu auto-close dark>
             <q-list style="min-width: 100px">
@@ -48,16 +48,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "PrivateLayout",
+
+  setup() {
+    return {
+      title: ref(""),
+    };
+  },
 
   methods: {
     logout() {
       localStorage.removeItem("tk");
       this.$router.push("/");
     },
+  },
+
+  created() {
+    const location = window.location.hash;
+    if (location.indexOf("#") > -1) {
+      this.title = location.split("/")[1].toUpperCase();
+    } else {
+      this.title = location.toUpperCase();
+    }
   },
 });
 </script>

@@ -251,6 +251,18 @@ const logColumns = [
     label: "Data",
     field: "date",
   },
+  {
+    name: "hour",
+    align: "center",
+    label: "Hora",
+    field: "hour"
+  },
+  {
+    name: "value",
+    align: "left",
+    label: "Valor(R$)",
+    field: "value"
+  },
   { name: "targetCode", label: "Código", field: "targetCode" },
   { name: "targetName", label: "Nome", field: "targetName" },
 ];
@@ -495,8 +507,7 @@ export default defineComponent({
           if (this.shape == "code") {
             value = this.findBySupplyCodeInput;
           }
-          if(this.shape == 'message') {
-
+          if (this.shape == "message") {
           }
           await this.$store.dispatch("supply/getSupplyLogs", {
             param: this.shape,
@@ -506,15 +517,18 @@ export default defineComponent({
 
         if (this.supplyLogs().length == 0) {
           this.$q.notify({
-            message: "Não existe nenhuma entrada ou saída de insumo cadastrada.",
+            message:
+              "Não existe nenhuma entrada ou saída de insumo cadastrada.",
             color: "negative",
             position: "top",
           });
         }
 
+        this.$store.commit("supply/formatSupplyLogs");
+
         this.$store.commit("supply/setApiLoading", false);
       } catch (error) {
-        console.log('err', error);
+        console.log("err", error);
         this.$store.commit("supply/setApiLoading", false);
       }
     },

@@ -68,12 +68,12 @@ export default defineComponent({
   setup(props, { emit }) {
     return {
       ...mapGetters({
-        apiLoading: "user/getApiLoading",
+        apiLoading: "supply/getApiLoading",
       }),
 
       code: ref(""),
       qty: ref(0),
-      value: ref("")
+      value: ref(""),
     };
   },
 
@@ -92,9 +92,8 @@ export default defineComponent({
         const supplyEntry = {
           code: this.code,
           qty: this.qty,
-          value: this.value
+          value: this.value,
         };
-
 
         this.$store.commit("supply/setApiLoading", true);
 
@@ -117,7 +116,25 @@ export default defineComponent({
         this.$emit("close");
         return;
       } catch (error) {
-        console.log("err", error);
+        this.$store.commit("supply/setApiLoading", false);
+
+        const { message } = error;
+        const status = message.split(" ")[message.split(" ").length - 1];
+
+        const unauthorizedStatus = ["404"];
+        if (unauthorizedStatus.includes(status)) {
+          this.$q.notify({
+            message: "O insumo não existe.",
+            color: "negative",
+            position: "top",
+          });
+
+          this.code = "";
+          this.qty = 0;
+          this.value = "";
+
+          return;
+        }
 
         this.$store.commit("supply/setApiLoading", false);
       }

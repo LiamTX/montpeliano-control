@@ -28,6 +28,7 @@ interface supplyLog {
   targetName: string;
   description?: string;
   value?: string;
+  hour?: string;
 }
 
 export interface SupplyStateInterface {

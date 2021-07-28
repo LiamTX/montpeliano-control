@@ -59,7 +59,7 @@ export default defineComponent({
   setup(props, { emit }) {
     return {
       ...mapGetters({
-        apiLoading: "user/getApiLoading",
+        apiLoading: "supply/getApiLoading",
       }),
 
       code: ref(""),
@@ -104,7 +104,24 @@ export default defineComponent({
         this.$emit("close");
         return;
       } catch (error) {
-        console.log("err", error);
+        this.$store.commit("supply/setApiLoading", false);
+
+        const { message } = error;
+        const status = message.split(" ")[message.split(" ").length - 1];
+
+        const unauthorizedStatus = ["404"];
+        if (unauthorizedStatus.includes(status)) {
+          this.$q.notify({
+            message: "O insumo não existe.",
+            color: "negative",
+            position: "top",
+          });
+
+          this.code = "";
+          this.qty = 0;
+
+          return;
+        }
 
         this.$store.commit("supply/setApiLoading", false);
       }

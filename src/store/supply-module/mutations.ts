@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { MutationTree } from 'vuex';
 import { SupplyStateInterface } from './state';
 
@@ -23,6 +24,23 @@ const mutation: MutationTree<SupplyStateInterface> = {
 
   setSupplyLogs(state, supplyLogs) {
     state.supplyLogs = supplyLogs;
+  },
+  formatSupplyLogs(state) {
+    for (let log of state.supplyLogs) {
+      log.hour = format(new Date(log.date), 'KK:mm');
+      log.date = format(new Date(log.date), 'dd/MM/yyyy');
+
+      if (log.message == 'SUPPLY_ENTRY') {
+        log.message = 'Entrada de insumo';
+
+        log.value = log.value ? `R$ ${log.value}` : 'Valor não registrado'
+      }
+      if (log.message == 'SUPPLY_OUTPUT') {
+        log.message = 'Saida de insumo';
+
+        log.value = 'Saida não consta'
+      }
+    }
   }
 };
 

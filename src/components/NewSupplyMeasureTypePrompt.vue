@@ -59,7 +59,7 @@ export default defineComponent({
   setup(props, { emit }) {
     return {
       ...mapGetters({
-        apiLoading: "user/getApiLoading",
+        apiLoading: "supply/getApiLoading",
       }),
 
       code: ref(""),
