@@ -123,6 +123,19 @@ export default defineComponent({
           return;
         }
 
+        const badRequestStatus = ["400"];
+        if (badRequestStatus.includes(status)) {
+          this.$q.notify({
+            message: "Insumo ja sem estoque.",
+            color: "negative",
+            position: "top",
+          });
+
+          this.qty = 0;
+
+          return;
+        }
+
         this.$store.commit("supply/setApiLoading", false);
       }
     },
