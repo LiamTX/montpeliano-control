@@ -105,7 +105,24 @@ export default defineComponent({
         this.$emit("close");
         return;
       } catch (error) {
-        console.log("err", error);
+        this.$store.commit("supply/setApiLoading", false);
+
+        const { message } = error;
+        const status = message.split(" ")[message.split(" ").length - 1];
+
+        const unauthorizedStatus = ["400"];
+        if (unauthorizedStatus.includes(status)) {
+          this.$q.notify({
+            message: "Tipo de insumo ja existe.",
+            color: "negative",
+            position: "top",
+          });
+
+          this.code = "";
+          this.name = "";
+
+          return;
+        }
 
         this.$store.commit("supply/setApiLoading", false);
       }

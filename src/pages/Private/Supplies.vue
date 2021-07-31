@@ -129,9 +129,9 @@
           <label class="q-pa-md">Buscar por:</label>
 
           <div class="q-gutter-sm q-pa-md">
-            <q-radio v-model="shape" val="all" label="Todos" />
-            <q-radio v-model="shape" val="code" label="Código" />
-            <q-radio v-model="shape" val="message" label="Ação" />
+            <q-radio v-model="logShape" val="all" label="Todos" />
+            <q-radio v-model="logShape" val="targetCode" label="Código" />
+            <q-radio v-model="logShape" val="message" label="Ação" />
 
             <q-btn
               color="orange-8"
@@ -175,6 +175,26 @@
             <new-supply-out
               :prompt="newSupplyOut"
               @close="newSupplyOut = false"
+            />
+          </div>
+
+          <div class="q-gutter-sm q-pa-md">
+            <q-input
+              v-if="showCodeLogSupplyInput"
+              dark
+              color="orange-8"
+              label="Código"
+              style="width: 20%"
+              v-model="findLogByCodeInput"
+            />
+            <q-select
+              v-if="showMessageLogSupplySelect"
+              color="orange-9"
+              v-model="findLogByMessageSelect"
+              :options="optionsMessageSupplyLogs"
+              label="Ação"
+              style="width: 20%"
+              dark
             />
           </div>
 
@@ -255,13 +275,13 @@ const logColumns = [
     name: "hour",
     align: "center",
     label: "Hora",
-    field: "hour"
+    field: "hour",
   },
   {
     name: "value",
     align: "left",
     label: "Valor(R$)",
-    field: "value"
+    field: "value",
   },
   { name: "targetCode", label: "Código", field: "targetCode" },
   { name: "targetName", label: "Nome", field: "targetName" },
@@ -282,6 +302,8 @@ export default defineComponent({
     let optionsSupplyTypes: any[] = [];
     let optionsSupplyMeasureTypes: any[] = [];
 
+    let optionsMessageSupplyLogs = ["Entrada de insumo", "Saida de insumo"];
+
     let modelSupplyType: any = ref("");
 
     let findBySupplyTypeSelect: any = ref("");
@@ -301,6 +323,7 @@ export default defineComponent({
       loading: ref(true),
 
       shape: ref("all"),
+      logShape: ref("all"),
 
       tab: ref("supplies"),
 
@@ -316,6 +339,7 @@ export default defineComponent({
 
       optionsSupplyTypes,
       optionsSupplyMeasureTypes,
+      optionsMessageSupplyLogs,
 
       showCodeSupplyInput: ref(false),
       showTypeSupplySelect: ref(false),
@@ -324,6 +348,12 @@ export default defineComponent({
       findBySupplyCodeInput: ref(""),
       findBySupplyTypeSelect,
       findBySupplyQtyInput: ref(""),
+
+      showCodeLogSupplyInput: ref(false),
+      showMessageLogSupplySelect: ref(false),
+
+      findLogByCodeInput: ref(""),
+      findLogByMessageSelect: ref(""),
     };
   },
 
@@ -341,6 +371,17 @@ export default defineComponent({
       }
       if (value == "qty") {
         this.showQtySupplyInput = true;
+      }
+    },
+    logShape(value, oldValue) {
+      this.showCodeLogSupplyInput = false;
+      this.showMessageLogSupplySelect = false;
+
+      if (value == "targetCode") {
+        this.showCodeLogSupplyInput = true;
+      }
+      if (value == "message") {
+        this.showMessageLogSupplySelect = true;
       }
     },
   },
@@ -500,17 +541,25 @@ export default defineComponent({
       try {
         this.$store.commit("supply/setApiLoading", true);
 
-        if (this.shape == "all") {
+        if (this.logShape == "all") {
           await this.$store.dispatch("supply/getSupplyLogs");
         } else {
           let value = "";
-          if (this.shape == "code") {
-            value = this.findBySupplyCodeInput;
+          if (this.logShape == "targetCode") {
+            value = this.findLogByCodeInput;
           }
-          if (this.shape == "message") {
+          if (this.logShape == "message") {
+            if (this.findLogByMessageSelect == "Entrada de insumo") {
+              value = "SUPPLY_ENTRY";
+            }
+            if (this.findLogByMessageSelect == "Saida de insumo") {
+              value = "SUPPLY_OUTPUT";
+            }
           }
+          console.log(this.logShape);
+          console.log(value);
           await this.$store.dispatch("supply/getSupplyLogs", {
-            param: this.shape,
+            param: this.logShape,
             value,
           });
         }

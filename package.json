@@ -19,7 +19,8 @@
   "devDependencies": {
     "@quasar/app": "^3.0.0",
     "@types/node": "^10.17.15",
-    "electron": "^13.1.6"
+    "electron": "^13.1.6",
+    "electron-packager": "^15.2.0"
   },
   "browserslist": [
     "last 10 Chrome versions",

@@ -46,7 +46,10 @@ const actions: ActionTree<SupplyStateInterface, StateInterface> = {
       queryString = `?${data.param}=${data.value}`
     }
 
+    console.log(queryString);
+
     const supplyLogs = await api.get(`/logs${queryString}`);
+    console.log(supplyLogs.data);
 
     context.commit('setSupplyLogs', supplyLogs.data);
   },
