@@ -46,6 +46,17 @@
           :options="optionsSupplyMeasureTypes"
           label="Tipo de medida do insumo"
         />
+
+        <q-input
+          v-model="value"
+          class="mb-1"
+          filled
+          label="Valor do insumo (R$)"
+          color="orange-9"
+          mask="#.##"
+          fill-mask="0"
+          reverse-fill-mask
+        />
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -98,6 +109,7 @@ export default defineComponent({
 
       code: ref(""),
       name: ref(""),
+      value: ref(0),
       modelSupplyType,
       modelSupplyMeasureType,
     };
@@ -124,9 +136,12 @@ export default defineComponent({
 
   methods: {
     async createNewSupplyMeasureType() {
+      console.log(this.value);
       if (
         !this.code ||
         !this.name ||
+        !this.value ||
+        this.value == 0.00 ||
         !this.modelSupplyType ||
         !this.modelSupplyMeasureType ||
         this.modelSupplyType.value == "Cadastre um tipo de insumo" ||
@@ -147,6 +162,7 @@ export default defineComponent({
         const supply = {
           code: this.code,
           name: this.name,
+          value: this.value,
           type: this.modelSupplyType.value,
           measureType: this.modelSupplyMeasureType.value,
         };
@@ -157,6 +173,7 @@ export default defineComponent({
 
         this.code = "";
         this.name = "";
+        this.value = 0;
         this.modelSupplyType = null;
         this.modelSupplyMeasureType = null;
 
@@ -184,6 +201,7 @@ export default defineComponent({
 
           this.code = "";
           this.name = "";
+          this.value = 0;
           this.modelSupplyType = null;
           this.modelSupplyMeasureType = null;
 

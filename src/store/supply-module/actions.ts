@@ -62,6 +62,9 @@ const actions: ActionTree<SupplyStateInterface, StateInterface> = {
     const supplyOutPut = await (await api.post('/supplies/output', data)).data;
 
     return supplyOutPut;
+  },
+  async findOneSupply(context, data) {
+    return await (await api.get(`/supplies/${data}`)).data;
   }
 };
 

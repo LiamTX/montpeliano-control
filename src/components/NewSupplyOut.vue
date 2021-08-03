@@ -12,6 +12,7 @@
           label="Código do insumo"
           color="orange-9"
           v-model="code"
+          :loading="apiLoading()"
         />
 
         <q-input
@@ -20,6 +21,7 @@
           label="Quantidade"
           color="orange-9"
           v-model="qty"
+          :disable="qtyDisable"
         />
       </q-card-section>
 
@@ -64,7 +66,39 @@ export default defineComponent({
 
       code: ref(""),
       qty: ref(0),
+
+      qtyDisable: ref(true),
     };
+  },
+
+  watch: {
+    async code(value, oldValue) {
+      this.$store.commit("supply/setApiLoading", true);
+
+      if (value || value != "") {
+        const supply = await this.$store.dispatch(
+          "supply/findOneSupply",
+          value
+        );
+        if (!supply) {
+          this.$q.notify({
+            message: "Insumo não encontrado",
+            color: "negative",
+            position: "top",
+          });
+        } else {
+          this.$q.notify({
+            message: "Insumo encontrado",
+            color: "green-9",
+            position: "top",
+          });
+
+          this.qtyDisable = false;
+        }
+      }
+
+      this.$store.commit("supply/setApiLoading", false);
+    },
   },
 
   methods: {

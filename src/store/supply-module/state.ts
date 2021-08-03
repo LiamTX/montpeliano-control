@@ -4,7 +4,7 @@ interface supply {
   name: string;
   type: string;
   measureType: string;
-  value?: string;
+  value: string;
   qty?: number;
 }
 

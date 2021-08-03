@@ -251,6 +251,12 @@ const supplyColumns = [
   { name: "type", label: "Tipo", field: "type" },
   { name: "measureTypes", label: "Tipo de medida", field: "measureType" },
   {
+    name: "value",
+    label: "Valor em estoque",
+    field: "value",
+    align: "center",
+  },
+  {
     name: "qty",
     label: "Quantidade em estoque",
     field: "qty",
@@ -511,6 +517,7 @@ export default defineComponent({
           });
         }
 
+        this.$store.commit("supply/formatSupplies");
         this.$store.commit("supply/setApiLoading", false);
       } catch (error) {
         this.$store.commit("supply/setApiLoading", false);

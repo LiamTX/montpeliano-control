@@ -21,6 +21,13 @@ const mutation: MutationTree<SupplyStateInterface> = {
   setSupplyMeasureTypes(state, supplyMeasureTypes) {
     state.supplyMeasureTypes.push(...supplyMeasureTypes);
   },
+  formatSupplies(state) {
+    for (let supply of state.supplies) {
+      if(supply.value) {
+        supply.value = `R$ ${supply.value}`
+      }
+    }
+  },
 
   setSupplyLogs(state, supplyLogs) {
     state.supplyLogs = supplyLogs;

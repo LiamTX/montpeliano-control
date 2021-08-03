@@ -12,6 +12,7 @@
           label="Código do insumo"
           color="orange-9"
           v-model="code"
+          :loading="apiLoading()"
         />
 
         <q-input
@@ -21,14 +22,7 @@
           color="orange-9"
           v-model="qty"
           type="number"
-        />
-
-        <q-input
-          class="mb-1"
-          filled
-          label="Valor(opcional)"
-          color="orange-9"
-          v-model="value"
+          :disable="qtyDisable"
         />
       </q-card-section>
 
@@ -73,8 +67,39 @@ export default defineComponent({
 
       code: ref(""),
       qty: ref(0),
-      value: ref(""),
+
+      qtyDisable: ref(true),
     };
+  },
+
+  watch: {
+    async code(value, oldValue) {
+      this.$store.commit("supply/setApiLoading", true);
+
+      if (value || value != "") {
+        const supply = await this.$store.dispatch(
+          "supply/findOneSupply",
+          value
+        );
+        if (!supply) {
+          this.$q.notify({
+            message: "Insumo não encontrado",
+            color: "negative",
+            position: "top",
+          });
+        } else {
+          this.$q.notify({
+            message: "Insumo encontrado",
+            color: "green-9",
+            position: "top",
+          });
+
+          this.qtyDisable = false;
+        }
+      }
+
+      this.$store.commit("supply/setApiLoading", false);
+    },
   },
 
   methods: {
@@ -92,7 +117,6 @@ export default defineComponent({
         const supplyEntry = {
           code: this.code,
           qty: this.qty,
-          value: this.value,
         };
 
         this.$store.commit("supply/setApiLoading", true);
@@ -104,7 +128,6 @@ export default defineComponent({
 
         this.code = "";
         this.qty = 0;
-        this.value = "";
 
         this.$q.notify({
           message: "Entrada de insumo cadastrado com sucesso!",
@@ -131,7 +154,6 @@ export default defineComponent({
 
           this.code = "";
           this.qty = 0;
-          this.value = "";
 
           return;
         }
