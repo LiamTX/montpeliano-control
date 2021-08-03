@@ -15,13 +15,23 @@
           :loading="apiLoading()"
         />
 
+        <q-select
+          v-if="!disable"
+          color="orange-9"
+          class="mb-1"
+          filled
+          v-model="measureType"
+          label="Tipo de medida do insumo"
+          :disable="true"
+        />
+
         <q-input
           class="mb-1"
           filled
           label="Quantidade"
           color="orange-9"
           v-model="qty"
-          :disable="qtyDisable"
+          :disable="disable"
         />
       </q-card-section>
 
@@ -67,7 +77,9 @@ export default defineComponent({
       code: ref(""),
       qty: ref(0),
 
-      qtyDisable: ref(true),
+      measureType: ref(""),
+
+      disable: ref(true),
     };
   },
 
@@ -93,7 +105,8 @@ export default defineComponent({
             position: "top",
           });
 
-          this.qtyDisable = false;
+          this.measureType = supply.measureType;
+          this.disable = false;
         }
       }
 
