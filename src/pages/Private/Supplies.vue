@@ -251,9 +251,9 @@ const supplyColumns = [
   { name: "type", label: "Tipo", field: "type" },
   { name: "measureTypes", label: "Tipo de medida", field: "measureType" },
   {
-    name: "value",
+    name: "valueQty",
     label: "Valor em estoque",
-    field: "value",
+    field: "valueQty",
     align: "center",
   },
   {
@@ -282,12 +282,6 @@ const logColumns = [
     align: "center",
     label: "Hora",
     field: "hour",
-  },
-  {
-    name: "value",
-    align: "left",
-    label: "Valor(R$)",
-    field: "value",
   },
   { name: "targetCode", label: "Código", field: "targetCode" },
   { name: "targetName", label: "Nome", field: "targetName" },

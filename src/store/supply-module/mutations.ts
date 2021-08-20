@@ -23,8 +23,10 @@ const mutation: MutationTree<SupplyStateInterface> = {
   },
   formatSupplies(state) {
     for (let supply of state.supplies) {
-      if(supply.value) {
-        supply.value = `R$ ${supply.value}`
+      if (supply.valueQty) {
+        supply.valueQty = `R$ ${supply.valueQty}`
+      } else {
+        supply.valueQty = `R$ 0`
       }
     }
   },

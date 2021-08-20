@@ -6,6 +6,7 @@ interface supply {
   measureType: string;
   value: string;
   qty?: number;
+  valueQty?: number | string;
 }
 
 interface supplyType {
