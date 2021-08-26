@@ -5,7 +5,13 @@
         <q-img src="../../assets/mont-logo.png" :ratio="19 / 9" />
       </div>
       <q-form class="q-gutter-md">
-        <q-input filled v-model="username" label="Username" color="orange-9" dark />
+        <q-input
+          filled
+          v-model="username"
+          label="Username"
+          color="orange-9"
+          dark
+        />
 
         <q-input
           filled
@@ -86,9 +92,9 @@ export default defineComponent({
         this.$store.commit("user/setApiLoading", true);
 
         const response = await this.$store.dispatch("user/auth", user);
-        if (response.token) {
-          localStorage.setItem("tk", JSON.stringify(response.token));
-        }
+        console.log(response);
+
+        localStorage.setItem("tk", JSON.stringify(response.token));
 
         this.$q.notify({
           message: "Seja bem-vindo(a)",
