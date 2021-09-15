@@ -26,12 +26,15 @@
         />
 
         <q-input
+          v-model="qty"
           class="mb-1"
           filled
           label="Quantidade"
           color="orange-9"
-          v-model="qty"
+          mask="#.###"
+          fill-mask="0"
           :disable="disable"
+          reverse-fill-mask
         />
       </q-card-section>
 
@@ -75,7 +78,7 @@ export default defineComponent({
       }),
 
       code: ref(""),
-      qty: ref(0),
+      qty: ref(""),
 
       measureType: ref(""),
 
@@ -139,7 +142,7 @@ export default defineComponent({
         );
 
         this.code = "";
-        this.qty = 0;
+        this.qty = "";
 
         this.$q.notify({
           message: "Saída de insumo cadastrado com sucesso!",
@@ -165,7 +168,7 @@ export default defineComponent({
           });
 
           this.code = "";
-          this.qty = 0;
+          this.qty = "";
 
           return;
         }
@@ -178,7 +181,7 @@ export default defineComponent({
             position: "top",
           });
 
-          this.qty = 0;
+          this.qty = "";
 
           return;
         }
