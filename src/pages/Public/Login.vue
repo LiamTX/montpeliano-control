@@ -92,7 +92,7 @@ export default defineComponent({
         this.$store.commit("user/setApiLoading", true);
 
         const response = await this.$store.dispatch("user/auth", user);
-        console.log(response);
+        console.log('response', response);
 
         localStorage.setItem("tk", JSON.stringify(response.token));
 
@@ -111,7 +111,7 @@ export default defineComponent({
         }
 
         this.$router.push("/supplies");
-      } catch (error) {
+      } catch (error: any) {
         this.$store.commit("user/setApiLoading", false);
 
         const { message } = error;

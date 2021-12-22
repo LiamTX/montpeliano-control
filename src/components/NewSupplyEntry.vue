@@ -144,6 +144,8 @@ export default defineComponent({
           qty: this.qty,
         };
 
+        console.log(this.qty)
+
         this.$store.commit("supply/setApiLoading", true);
 
         const response = await this.$store.dispatch(

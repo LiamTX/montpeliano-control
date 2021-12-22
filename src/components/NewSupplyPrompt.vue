@@ -51,7 +51,7 @@
           v-model="value"
           class="mb-1"
           filled
-          label="Valor do insumo (R$)"
+          label="Valor do insumo por medida (R$)"
           color="orange-9"
           mask="#.##"
           fill-mask="0"
@@ -186,7 +186,7 @@ export default defineComponent({
         this.$store.commit("supply/setApiLoading", false);
         this.$emit("close");
         return;
-      } catch (error) {
+      } catch (error: any) {
         console.log("err", error.message);
         const { message } = error;
         this.$store.commit("supply/setApiLoading", false);

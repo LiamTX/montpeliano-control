@@ -513,7 +513,7 @@ export default defineComponent({
 
         this.$store.commit("supply/formatSupplies");
         this.$store.commit("supply/setApiLoading", false);
-      } catch (error) {
+      } catch (error: any) {
         this.$store.commit("supply/setApiLoading", false);
 
         const { message } = error;
