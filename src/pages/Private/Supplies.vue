@@ -262,6 +262,12 @@ const supplyColumns = [
     field: "qty",
     sortable: true,
   },
+  {
+    name: "qty",
+    label: "Quantidade em estoque",
+    field: "qty",
+    sortable: true,
+  },
 ];
 
 const logColumns = [
@@ -285,6 +291,7 @@ const logColumns = [
   },
   { name: "targetCode", label: "Código", field: "targetCode" },
   { name: "targetName", label: "Nome", field: "targetName" },
+  { name: "targetQty", label: "Quantidade", field: "targetQty" },
 ];
 
 export default defineComponent({
@@ -299,6 +306,8 @@ export default defineComponent({
   },
 
   setup() {
+    const selected = ref([]);
+
     let optionsSupplyTypes: any[] = [];
     let optionsSupplyMeasureTypes: any[] = [];
 
@@ -317,6 +326,7 @@ export default defineComponent({
         supplyTypes: "supply/getSupplyTypes",
         supplyMeasureTypes: "supply/getSupplyMeasureTypes",
       }),
+
 
       modelSupplyType,
 
@@ -354,6 +364,14 @@ export default defineComponent({
 
       findLogByCodeInput: ref(""),
       findLogByMessageSelect: ref(""),
+
+      getSelectedString() {
+        return selected.value.length === 0
+          ? ""
+          : `${selected.value.length} record${
+              selected.value.length > 1 ? "s" : ""
+            } selected of ${2}`;
+      },
     };
   },
 
